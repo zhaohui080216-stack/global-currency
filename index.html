@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#102a43">
+<title>環球匯率 Global Currency｜ChatGPT AND 趙輝</title>
+<style>
+:root{--navy:#102a43;--blue:#2563eb;--ink:#172b4d;--muted:#62748a;--line:#dce5ef;--bg:#f3f7fb;--white:#fff;--green:#16845b;--gold:#a86c13}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(120deg,#102a43,#174b70);color:#fff;padding:22px 20px 18px}
+.head{max-width:1080px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:15px}
+.brand{font-size:24px;font-weight:850;letter-spacing:.3px}.brand small{display:block;font-size:11px;letter-spacing:1.8px;opacity:.8;margin-top:2px}
+.signature{font-size:12px;color:#dcecff;border:1px solid #ffffff55;padding:8px 11px;border-radius:10px;text-align:right;line-height:1.5}
+main{max-width:1080px;margin:26px auto;padding:0 18px}
+.tabs{display:flex;gap:8px;overflow:auto;padding-bottom:5px;margin-bottom:16px}
+.tab{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 14px;color:var(--muted);font-weight:700;white-space:nowrap;cursor:pointer}
+.tab.active{background:var(--navy);border-color:var(--navy);color:white}
+.panel{display:none}.panel.active{display:block}
+.card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:21px;box-shadow:0 10px 28px #16324f09;margin-bottom:15px}
+h1{font-size:25px;margin:0 0 7px}h2{font-size:18px;margin:0 0 13px}h3{font-size:15px;margin:0 0 8px}
+.sub{font-size:13px;color:var(--muted);margin:0 0 17px;line-height:1.65}
+.label{font-size:13px;color:var(--muted);font-weight:700;display:block;margin-bottom:7px}
+.amount{font-size:29px;font-weight:800;width:100%;border:0;outline:0;padding:4px 0;color:var(--ink)}
+.source{border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin-bottom:14px}
+select{width:100%;border:0;background:transparent;color:var(--ink);font-size:15px;font-weight:700;outline:0;padding:5px 0}
+.target{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:13px;margin-top:9px}
+.target small{display:block;color:var(--muted);font-size:11px;margin-bottom:3px}.target strong{display:block;font-size:18px;text-align:right;overflow-wrap:anywhere}
+.actions{display:flex;gap:9px;margin-top:16px}
+button.primary{background:var(--blue);color:#fff;border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer;flex:1}
+button.secondary{background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px 14px;cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+.status{font-size:12px;color:var(--muted);text-align:center;margin-top:12px;min-height:18px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0}
+.metric{background:#f2f6fb;border-radius:12px;padding:13px}.metric small{font-size:11px;color:var(--muted)}.metric strong{display:block;font-size:20px;margin-top:4px}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:11px;color:var(--muted)}td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.rank{font-weight:850;color:var(--blue)}
+.pill{display:inline-block;font-size:11px;padding:4px 8px;border-radius:99px;background:#edf4ff;color:#315f9d}
+.pill.green{background:#e8f6ef;color:#16734e}.pill.gold{background:#fff5e6;color:#94600f}
+.bar{height:7px;background:#e9eff7;border-radius:99px;overflow:hidden;min-width:85px}.bar span{display:block;height:100%;background:#3976c8;border-radius:99px}
+.chartbox{height:280px;position:relative}canvas{width:100%;height:100%;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:12px;color:var(--muted)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.notice{background:#f2f6fb;border-radius:12px;padding:13px 14px;font-size:12px;line-height:1.7;color:#53677e;margin-top:13px}
+.source-note{font-size:12px;line-height:1.7;color:var(--muted);margin-top:12px}
+.score{font-weight:800;font-variant-numeric:tabular-nums}
+footer{text-align:center;color:#8190a2;font-size:12px;padding:20px 12px 34px;line-height:1.8}
+@media(max-width:680px){main{margin:19px auto}.card{padding:16px}.head{align-items:flex-start}.signature{font-size:10px}.brand{font-size:21px}h1{font-size:22px}.grid{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr 1fr}.target strong{font-size:16px}}
+</style>
+</head>
+<body>
+<header><div class="head"><div class="brand">🌍 環球匯率<small>GLOBAL CURRENCY</small></div><div class="signature">共同製作<br><strong>ChatGPT AND 趙輝</strong></div></div></header>
+<main>
+<nav class="tabs" aria-label="網站功能">
+<button class="tab active" data-tab="convert">多幣種換算</button>
+<button class="tab" data-tab="reserve">央行儲備排名</button>
+<button class="tab" data-tab="usage">國際使用程度</button>
+<button class="tab" data-tab="exchange">兌換便利度</button>
+<button class="tab" data-tab="history">歷史趨勢</button>
+<button class="tab" data-tab="scoreboard">貨幣綜合觀察</button>
+</nav>
+<section class="panel active" id="convert">
+<div class="card">
+<h1>一種貨幣，同時換算三種</h1><p class="sub">輸入金額，三個目標貨幣同步計算。貨幣選單優先依主要官方外匯儲備貨幣排序。</p>
+<div class="source"><label class="label" for="amount">換算金額</label><input class="amount" id="amount" type="number" min="0" step="any" value="100" inputmode="decimal"><label class="label" for="base">來源貨幣</label><select id="base"></select></div>
+<div class="target"><div><small>目標貨幣 1</small><select id="t1"></select></div><strong id="v1">—</strong></div>
+<div class="target"><div><small>目標貨幣 2</small><select id="t2"></select></div><strong id="v2">—</strong></div>
+<div class="target"><div><small>目標貨幣 3</small><select id="t3"></select></div><strong id="v3">—</strong></div>
+<div class="actions"><button class="primary" id="refresh">更新匯率</button><button class="secondary" id="reset">重設</button></div>
+<div class="status" id="fxStatus">正在取得匯率…</div>
+<div class="notice">匯率為公開參考報價，非逐筆即時成交價；不含銀行手續費、平台費及買賣價差。</div>
+</div></section>
+<section class="panel" id="reserve">
+<div class="card"><h1>全球官方外匯儲備貨幣</h1><p class="sub">IMF COFER 統計的是全球已分配外匯儲備的幣別構成。它反映央行持有的外幣資產配置，不等於貨幣在民間交易中的使用量。</p>
+<div class="metric-grid"><div class="metric"><small>資料機構</small><strong>IMF</strong></div><div class="metric"><small>統計名稱</small><strong>COFER</strong></div><div class="metric"><small>更新頻率</small><strong>季度</strong></div><div class="metric"><small>衡量內容</small><strong>儲備占比</strong></div></div>
+<div class="table-wrap"><table><thead><tr><th>參考次序</th><th>貨幣</th><th class="num">2026 Q2 占比</th><th>季度變化</th></tr></thead><tbody id="reserveRows"></tbody></table></div>
+<div class="source-note" id="reserveStatus"></div>
+</div></section>
+<section class="panel" id="usage">
+<div class="card"><h1>貨幣國際使用程度</h1><p class="sub">國際使用不是單一指標。以下依全球支付、外匯交易、貿易計價與跨境金融使用等公開統計所呈現的整體格局，作為概覽，不是官方統一名次。</p>
+<div class="table-wrap"><table><thead><tr><th>概覽次序</th><th>貨幣</th><th>國際使用情況</th><th>主要角色</th></tr></thead><tbody id="usageRows"></tbody></table></div>
+<div class="notice">不同資料庫的口徑不同：SWIFT 支付訊息不等於全球所有支付；BIS 外匯成交統計包含每筆交易的兩種貨幣，因此份額合計為 200%。此處不把不同口徑混成精確分數。</div></div></section>
+<section class="panel" id="exchange">
+<div class="card"><h1>全球兌換便利度</h1><p class="sub">從自由兌換程度、國際流通、外匯市場深度及一般旅行換匯可得性作定性比較。實際便利度會因國家、銀行、制裁規則與資本管制而不同。</p>
+<div class="table-wrap"><table><thead><tr><th>分組</th><th>貨幣</th><th>一般跨境兌換觀察</th><th>注意事項</th></tr></thead><tbody id="exchangeRows"></tbody></table></div>
+<div class="notice">這是一般性參考分組，不是法律上的可兌換性認證，也不保證任何國家或兌換商一定收兌該貨幣。</div></div></section>
+<section class="panel" id="history">
+<div class="card"><h1>官方儲備占比歷史變化</h1><p class="sub">展示 IMF 2026 年第二季度簡報中可核實的主要貨幣占比季度對比。完整長期序列可由 IMF COFER 資料集查閱。</p>
+<div class="chartbox"><canvas id="reserveChart" aria-label="外匯儲備占比季度比較圖"></canvas></div>
+<div class="legend"><span><i class="dot" style="background:#2563eb"></i>美元</span><span><i class="dot" style="background:#e28a35"></i>歐元</span><span><i class="dot" style="background:#259b72"></i>日圓</span><span><i class="dot" style="background:#8b5cf6"></i>人民幣</span></div>
+<div class="source-note">2026 Q1 與 Q2 數值依 IMF 公開簡報。這是兩個季度的比較，不代表長期完整歷史走勢。</div></div>
+<div class="card"><h2>主要貨幣歷史走勢（市場匯率）</h2><p class="sub">選擇基準貨幣及目標貨幣，查看免費匯率服務提供的歷史日資料（如該服務支援）。</p>
+<div class="grid"><div><label class="label" for="histBase">基準貨幣</label><select id="histBase"></select></div><div><label class="label" for="histTarget">比較貨幣</label><select id="histTarget"></select></div></div>
+<div class="chartbox" style="margin-top:15px"><canvas id="fxChart"></canvas></div><div class="status" id="histFxStatus">尚未載入歷史匯率。</div>
+<button class="primary" id="loadHistory" style="width:100%;margin-top:10px">載入近 30 天歷史匯率</button>
+</div></section>
+<section class="panel" id="scoreboard">
+<div class="card"><h1>全球貨幣綜合觀察</h1><p class="sub">把儲備地位、國際使用、兌換便利度分開觀察。這裡不製造一個看似精確、但缺乏公認方法的「世界貨幣總分」。</p>
+<div class="table-wrap"><table><thead><tr><th>貨幣</th><th>央行儲備地位</th><th>國際使用</th><th>兌換便利度</th><th>觀察摘要</th></tr></thead><tbody id="scoreRows"></tbody></table></div>
+<div class="notice">綜合觀察是資訊整理，不構成投資建議，也不代表貨幣未來升值或貶值預測。經濟規模、匯率強弱與國際接受度是不同概念。</div></div></section>
+</main>
+<footer>© 2026 環球匯率 Global Currency<br><strong>ChatGPT AND 趙輝</strong><br>資料用途：一般資訊參考</footer>
+<script>
+const names={USD:"美元",EUR:"歐元",JPY:"日圓",GBP:"英鎊",CAD:"加拿大元",CNY:"人民幣",AUD:"澳大利亞元",CHF:"瑞士法郎",TWD:"新台幣",HKD:"港幣",SGD:"新加坡元",NZD:"紐西蘭元",KRW:"韓元",INR:"印度盧比",THB:"泰銖",MYR:"馬來西亞令吉",IDR:"印尼盾",PHP:"菲律賓披索",VND:"越南盾",AED:"阿聯酋迪拉姆",SAR:"沙烏地里亞爾",QAR:"卡達里亞爾",KWD:"科威特第納爾",ZAR:"南非蘭特",MXN:"墨西哥披索",BRL:"巴西雷亞爾",TRY:"土耳其里拉",NOK:"挪威克朗",SEK:"瑞典克朗",DKK:"丹麥克朗",PLN:"波蘭茲羅提",CZK:"捷克克朗",HUF:"匈牙利福林",RON:"羅馬尼亞列伊",ILS:"以色列新謝克爾",ISK:"冰島克朗",ARS:"阿根廷披索",CLP:"智利披索",COP:"哥倫比亞披索",EGP:"埃及鎊",NGN:"奈及利亞奈拉",PKR:"巴基斯坦盧比",BDT:"孟加拉塔卡"};
+const order=["USD","EUR","JPY","GBP","CAD","CNY","AUD","CHF"];
+const codes=[...order,...Object.keys(names).filter(x=>!order.includes(x)).sort()];
+const $=id=>document.getElementById(id);
+function fill(el,v){el.innerHTML=codes.map(c=>`<option value="${c}">${c} · ${names[c]}</option>`).join("");el.value=v}
+fill($("base"),"USD");fill($("t1"),"JPY");fill($("t2"),"GBP");fill($("t3"),"TWD");fill($("histBase"),"USD");fill($("histTarget"),"EUR");
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab,.panel").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.tab).classList.add("active");if(b.dataset.tab==="history")drawReserveChart()});
+let fx=null;const fmt=n=>new Intl.NumberFormat("zh-TW",{maximumFractionDigits:4}).format(n);
+function renderFx(){let n=Number($("amount").value),b=$("base").value;[1,2,3].forEach(i=>{let t=$("t"+i),o=$("v"+i);if(!Number.isFinite(n)||n<0){o.textContent="請輸入有效金額";return}if(t.value===b){o.textContent=fmt(n)+" "+t.value;return}if(!fx||!fx[b]||!fx[t.value]){o.textContent="暫無資料";return}o.textContent=fmt(n*fx[t.value]/fx[b])+" "+t.value})}
+async function loadFx(){$("refresh").disabled=true;$("fxStatus").textContent="正在更新匯率…";try{let r=await fetch("https://open.er-api.com/v6/latest/USD",{cache:"no-store"});if(!r.ok)throw Error();let d=await r.json();if(d.result!=="success")throw Error();fx={...d.rates,USD:1};renderFx();$("fxStatus").textContent="匯率最後更新："+d.time_last_update_utc}catch(e){fx=null;renderFx();$("fxStatus").textContent="暫時無法取得匯率，請稍後重試。"}finally{$("refresh").disabled=false}}
+$("amount").oninput=renderFx;[$("base"),$("t1"),$("t2"),$("t3")].forEach(x=>x.onchange=renderFx);$("refresh").onclick=loadFx;
+$("reset").onclick=()=>{$("amount").value=100;fill($("base"),"USD");fill($("t1"),"JPY");fill($("t2"),"GBP");fill($("t3"),"TWD");renderFx()};
+const reserveData=[["USD","美元",56.70,"-0.48"],["EUR","歐元",20.60,"+0.56"],["JPY","日圓",4.96,"-0.47"],["CNY","人民幣",2.11,"+0.13"],["GBP","英鎊",null,"+0.16"],["CAD","加拿大元",null,"-0.01"],["AUD","澳大利亞元",null,"+0.13"],["CHF","瑞士法郎",null,"+0.03"]];
+$("reserveRows").innerHTML=reserveData.map((r,i)=>`<tr><td class="rank">${i+1}</td><td><b>${r[0]}</b> · ${r[1]}</td><td class="num">${r[2]===null?"未列出":r[2].toFixed(2)+"%"}</td><td>${r[3].startsWith("+")?"▲ ":"▼ "}${Math.abs(Number(r[3])).toFixed(2)} 個百分點</td></tr>`).join("");
+$("reserveStatus").textContent="資料期別：IMF 2026 Q2 簡報。該簡報明確列出美元、歐元、日圓、人民幣占比；其他幣別僅提供季度變化，故不填入未核實占比。後四種貨幣的排列僅供瀏覽，不代表本季精確名次。";
+const usage=[["USD","美元","極高","主要儲備、貿易計價、外匯交易與國際融資"],["EUR","歐元","極高","歐洲區域核心貨幣、儲備與跨境支付"],["GBP","英鎊","高","國際金融、外匯交易與部分貿易計價"],["JPY","日圓","高","主要外匯交易貨幣與融資貨幣"],["CNY","人民幣","中高","中國貿易結算與部分跨境金融使用"],["CHF","瑞士法郎","中","避險需求與跨境金融使用"],["CAD","加拿大元","中","大宗商品相關交易與北美跨境使用"],["AUD","澳大利亞元","中","亞太外匯交易與商品相關市場"],["SGD","新加坡元","區域性強","東南亞金融與區域貿易"],["HKD","港幣","區域性強","香港及與港元聯繫匯率相關交易"]];
+$("usageRows").innerHTML=usage.map((r,i)=>`<tr><td class="rank">${i+1}</td><td><b>${r[0]}</b> · ${r[1]}</td><td><span class="pill ${i<2?"green":""}">${r[2]}</span></td><td>${r[3]}</td></tr>`).join("");
+const exchange=[["全球主要可兌換貨幣","USD、EUR、GBP、JPY、CHF、CAD、AUD、NZD","通常在國際銀行及主要外匯市場較易取得","仍受當地法規、現金供應及費用影響"],["區域流通度高","SGD、HKD","在新加坡、香港及周邊區域較常見","離開主要流通區後接受度可能下降"],["有跨境用途但限制因地而異","CNY、TWD、KRW、INR、MYR、THB","可透過銀行或合規兌換商進行部分跨境兌換","可能有資本管理、用途或申報規定"],["需特別確認當地管制與市場供應","ARS、NGN、部分其他新興市場貨幣","可兌換性及實際報價差異可能較大","請事先向銀行或官方機構確認"]];
+$("exchangeRows").innerHTML=exchange.map(r=>`<tr><td><span class="pill">${r[0]}</span></td><td style="white-space:normal;min-width:160px">${r[1]}</td><td style="white-space:normal;min-width:180px">${r[2]}</td><td style="white-space:normal;min-width:180px">${r[3]}</td></tr>`).join("");
+const score=[["USD","美元","最主要","極高","全球流通與儲備核心"],["EUR","歐元","主要","極高","大型經濟區共同貨幣"],["JPY","日圓","主要","高","成熟外匯市場貨幣"],["GBP","英鎊","主要","高","國際金融中心貨幣"],["CNY","人民幣","重要","中高","貿易使用提升，仍有跨境管理制度"],["CHF","瑞士法郎","重要","高","避險及金融用途突出"],["CAD","加拿大元","重要","高","發達市場可兌換貨幣"],["AUD","澳大利亞元","重要","高","亞太市場常見交易貨幣"],["SGD","新加坡元","較小","區域性強","區域金融與貿易使用度高"],["TWD","新台幣","非 COFER 獨立項","區域性","主要在台灣及相關跨境場景流通"]];
+$("scoreRows").innerHTML=score.map(r=>`<tr><td><b>${r[0]}</b> · ${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[3]==="高"||r[3]==="極高"?"較高":"依場景而異"}</td><td style="white-space:normal;min-width:190px">${r[4]}</td></tr>`).join("");
+const reserveChartData=[{name:"美元",color:"#2563eb",v:[57.18,56.70]},{name:"歐元",color:"#e28a35",v:[20.04,20.60]},{name:"日圓",color:"#259b72",v:[5.43,4.96]},{name:"人民幣",color:"#8b5cf6",v:[1.98,2.11]}];
+function drawReserveChart(){drawLineChart($("reserveChart"),reserveChartData,60,["2026 Q1","2026 Q2"])}
+function drawLineChart(canvas,series,maxY,labels){let ctx=canvas.getContext("2d"),w=canvas.clientWidth,h=canvas.clientHeight,d=window.devicePixelRatio||1;canvas.width=w*d;canvas.height=h*d;ctx.scale(d,d);ctx.clearRect(0,0,w,h);let l=42,r=15,t=14,b=32,pw=w-l-r,ph=h-t-b;ctx.font="11px sans-serif";for(let i=0;i<=4;i++){let y=t+ph*i/4;ctx.strokeStyle="#e2e9f1";ctx.beginPath();ctx.moveTo(l,y);ctx.lineTo(w-r,y);ctx.stroke();ctx.fillStyle="#718096";ctx.fillText((maxY-i*maxY/4).toFixed(0)+"%",3,y+4)}series.forEach(s=>{ctx.strokeStyle=s.color;ctx.lineWidth=2.4;ctx.beginPath();s.v.forEach((v,i)=>{let x=l+pw*i/Math.max(1,s.v.length-1),y=t+ph*(maxY-v)/maxY;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();s.v.forEach((v,i)=>{let x=l+pw*i/Math.max(1,s.v.length-1),y=t+ph*(maxY-v)/maxY;ctx.fillStyle=s.color;ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fill()})});labels.forEach((x,i)=>{ctx.fillStyle="#62748a";ctx.fillText(x,l+pw*i/Math.max(1,labels.length-1)-20,h-8)})}
+function drawFxChart(points){drawLineChart($("fxChart"),[{name:"匯率",color:"#2563eb",v:points.map(p=>p[1])}],Math.max(...points.map(p=>p[1]))*1.08,points.map(p=>p[0].slice(5)))}
+$("loadHistory").onclick=async()=>{let base=$("histBase").value,target=$("histTarget").value; $("histFxStatus").textContent="正在嘗試取得近 30 天歷史資料…";try{let end=new Date(),start=new Date();start.setDate(end.getDate()-30);let iso=d=>d.toISOString().slice(0,10);let url=`https://api.frankfurter.app/${iso(start)}..${iso(end)}?from=${base}&to=${target}`;let res=await fetch(url);if(!res.ok)throw Error();let data=await res.json();let pts=Object.entries(data.rates||{}).map(([date,obj])=>[date,obj[target]]).filter(p=>Number.isFinite(p[1]));if(pts.length<2)throw Error();drawFxChart(pts);$("histFxStatus").textContent=`${base}/${target}：已載入 ${pts.length} 個報價日期。來源：Frankfurter（參考歐洲央行資料，非即時報價）。`}catch(e){$("histFxStatus").textContent="未能取得這組貨幣的歷史資料。Frankfurter 主要涵蓋其支援的貨幣與工作日參考匯率；可換一組貨幣再試。"}};
+loadFx();window.addEventListener("resize",()=>{if($("history").classList.contains("active")){drawReserveChart()}});
+</script>
+</body></html>
