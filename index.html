@@ -25,7 +25,7 @@ h1{font-size:25px;margin:0 0 7px}h2{font-size:18px;margin:0 0 13px}h3{font-size:
 .source{border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin-bottom:14px}
 select{width:100%;border:0;background:transparent;color:var(--ink);font-size:15px;font-weight:700;outline:0;padding:5px 0}
 .target{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:13px;margin-top:9px}
-.target small{display:block;color:var(--muted);font-size:11px;margin-bottom:3px}.target strong{display:block;font-size:18px;text-align:right;overflow-wrap:anywhere}
+.target small{display:block;color:var(--muted);font-size:11px;margin-bottom:3px}.target input{display:block;width:100%;min-width:0;border:1px solid var(--line);border-radius:9px;padding:9px 8px;font-size:17px;font-weight:750;text-align:right;color:var(--ink);background:#fbfdff;outline-color:var(--blue)}
 .actions{display:flex;gap:9px;margin-top:16px}
 button.primary{background:var(--blue);color:#fff;border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer;flex:1}
 button.secondary{background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px 14px;cursor:pointer}
@@ -66,9 +66,9 @@ footer{text-align:center;color:#8190a2;font-size:12px;padding:20px 12px 34px;lin
 <div class="card">
 <h1>一種貨幣，同時換算三種</h1><p class="sub">輸入金額，三個目標貨幣同步計算。貨幣選單優先依主要官方外匯儲備貨幣排序。</p>
 <div class="source"><label class="label" for="amount">換算金額</label><input class="amount" id="amount" type="number" min="0" step="any" value="100" inputmode="decimal"><label class="label" for="base">來源貨幣</label><select id="base"></select></div>
-<div class="target"><div><small>目標貨幣 1</small><select id="t1"></select></div><strong id="v1">—</strong></div>
-<div class="target"><div><small>目標貨幣 2</small><select id="t2"></select></div><strong id="v2">—</strong></div>
-<div class="target"><div><small>目標貨幣 3</small><select id="t3"></select></div><strong id="v3">—</strong></div>
+<div class="target"><div><small>目標貨幣 1</small><select id="t1"></select></div><input id="v1" type="number" min="0" step="any" value="" inputmode="decimal" aria-label="目標貨幣 1 金額"></div>
+<div class="target"><div><small>目標貨幣 2</small><select id="t2"></select></div><input id="v2" type="number" min="0" step="any" value="" inputmode="decimal" aria-label="目標貨幣 2 金額"></div>
+<div class="target"><div><small>目標貨幣 3</small><select id="t3"></select></div><input id="v3" type="number" min="0" step="any" value="" inputmode="decimal" aria-label="目標貨幣 3 金額"></div>
 <div class="actions"><button class="primary" id="refresh">更新匯率</button><button class="secondary" id="reset">重設</button></div>
 <div class="status" id="fxStatus">正在取得匯率…</div>
 <div class="notice">匯率為公開參考報價，非逐筆即時成交價；不含銀行手續費、平台費及買賣價差。</div>
@@ -111,11 +111,20 @@ const $=id=>document.getElementById(id);
 function fill(el,v){el.innerHTML=codes.map(c=>`<option value="${c}">${c} · ${names[c]}</option>`).join("");el.value=v}
 fill($("base"),"USD");fill($("t1"),"JPY");fill($("t2"),"GBP");fill($("t3"),"TWD");fill($("histBase"),"USD");fill($("histTarget"),"EUR");
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab,.panel").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.tab).classList.add("active");if(b.dataset.tab==="history")drawReserveChart()});
-let fx=null;const fmt=n=>new Intl.NumberFormat("zh-TW",{maximumFractionDigits:4}).format(n);
-function renderFx(){let n=Number($("amount").value),b=$("base").value;[1,2,3].forEach(i=>{let t=$("t"+i),o=$("v"+i);if(!Number.isFinite(n)||n<0){o.textContent="請輸入有效金額";return}if(t.value===b){o.textContent=fmt(n)+" "+t.value;return}if(!fx||!fx[b]||!fx[t.value]){o.textContent="暫無資料";return}o.textContent=fmt(n*fx[t.value]/fx[b])+" "+t.value})}
-async function loadFx(){$("refresh").disabled=true;$("fxStatus").textContent="正在更新匯率…";try{let r=await fetch("https://open.er-api.com/v6/latest/USD",{cache:"no-store"});if(!r.ok)throw Error();let d=await r.json();if(d.result!=="success")throw Error();fx={...d.rates,USD:1};renderFx();$("fxStatus").textContent="匯率最後更新："+d.time_last_update_utc}catch(e){fx=null;renderFx();$("fxStatus").textContent="暫時無法取得匯率，請稍後重試。"}finally{$("refresh").disabled=false}}
-$("amount").oninput=renderFx;[$("base"),$("t1"),$("t2"),$("t3")].forEach(x=>x.onchange=renderFx);$("refresh").onclick=loadFx;
-$("reset").onclick=()=>{$("amount").value=100;fill($("base"),"USD");fill($("t1"),"JPY");fill($("t2"),"GBP");fill($("t3"),"TWD");renderFx()};
+let fx=null;const fmt=n=>new Intl.NumberFormat("zh-TW",{maximumFractionDigits:6,useGrouping:false}).format(n);
+function renderFx(activeId="amount"){
+  const rows=[{amount:$("amount"),currency:$("base")},{amount:$("v1"),currency:$("t1")},{amount:$("v2"),currency:$("t2")},{amount:$("v3"),currency:$("t3")}];
+  const active=rows.find(r=>r.amount.id===activeId)||rows[0];
+  const entered=Number(active.amount.value),code=active.currency.value;
+  if(active.amount.value.trim()===""||!Number.isFinite(entered)||entered<0){rows.forEach(r=>{if(r!==active)r.amount.value=""});return}
+  if(!fx||!Number.isFinite(fx[code])||fx[code]===0){$("fxStatus").textContent="匯率尚未載入，請稍後更新。";return}
+  const usdValue=entered/fx[code];
+  rows.forEach(r=>{if(r!==active){const rate=fx[r.currency.value];r.amount.value=Number.isFinite(rate)?fmt(usdValue*rate):""}});
+}
+async function loadFx(){$("refresh").disabled=true;$("fxStatus").textContent="正在更新匯率…";try{let r=await fetch("https://open.er-api.com/v6/latest/USD",{cache:"no-store"});if(!r.ok)throw Error();let d=await r.json();if(d.result!=="success")throw Error();fx={...d.rates,USD:1};renderFx();$("fxStatus").textContent="匯率最後更新："+d.time_last_update_utc}catch(e){fx=null;$("fxStatus").textContent="暫時無法取得匯率，請稍後重試。"}finally{$("refresh").disabled=false}}
+$("amount").oninput=()=>renderFx("amount");$("v1").oninput=()=>renderFx("v1");$("v2").oninput=()=>renderFx("v2");$("v3").oninput=()=>renderFx("v3");
+$("base").onchange=()=>renderFx("amount");$("t1").onchange=()=>renderFx("v1");$("t2").onchange=()=>renderFx("v2");$("t3").onchange=()=>renderFx("v3");$("refresh").onclick=loadFx;
+$("reset").onclick=()=>{$("amount").value=100;fill($("base"),"USD");fill($("t1"),"JPY");fill($("t2"),"GBP");fill($("t3"),"TWD");renderFx("amount")};
 const reserveData=[["USD","美元",56.70,"-0.48"],["EUR","歐元",20.60,"+0.56"],["JPY","日圓",4.96,"-0.47"],["CNY","人民幣",2.11,"+0.13"],["GBP","英鎊",null,"+0.16"],["CAD","加拿大元",null,"-0.01"],["AUD","澳大利亞元",null,"+0.13"],["CHF","瑞士法郎",null,"+0.03"]];
 $("reserveRows").innerHTML=reserveData.map((r,i)=>`<tr><td class="rank">${i+1}</td><td><b>${r[0]}</b> · ${r[1]}</td><td class="num">${r[2]===null?"未列出":r[2].toFixed(2)+"%"}</td><td>${r[3].startsWith("+")?"▲ ":"▼ "}${Math.abs(Number(r[3])).toFixed(2)} 個百分點</td></tr>`).join("");
 $("reserveStatus").textContent="資料期別：IMF 2026 Q2 簡報。該簡報明確列出美元、歐元、日圓、人民幣占比；其他幣別僅提供季度變化，故不填入未核實占比。後四種貨幣的排列僅供瀏覽，不代表本季精確名次。";
