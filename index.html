@@ -105,11 +105,11 @@ footer{text-align:center;color:#8190a2;font-size:12px;padding:20px 12px 34px;lin
 <footer>© 2026 環球匯率 Global Currency<br><strong>ChatGPT AND 趙輝</strong><br>資料用途：一般資訊參考</footer>
 <script>
 const names={USD:"美元",EUR:"歐元",JPY:"日圓",GBP:"英鎊",CAD:"加拿大元",CNY:"人民幣",AUD:"澳大利亞元",CHF:"瑞士法郎",TWD:"新台幣",HKD:"港幣",SGD:"新加坡元",NZD:"紐西蘭元",KRW:"韓元",INR:"印度盧比",THB:"泰銖",MYR:"馬來西亞令吉",IDR:"印尼盾",PHP:"菲律賓披索",VND:"越南盾",AED:"阿聯酋迪拉姆",SAR:"沙烏地里亞爾",QAR:"卡達里亞爾",KWD:"科威特第納爾",ZAR:"南非蘭特",MXN:"墨西哥披索",BRL:"巴西雷亞爾",TRY:"土耳其里拉",NOK:"挪威克朗",SEK:"瑞典克朗",DKK:"丹麥克朗",PLN:"波蘭茲羅提",CZK:"捷克克朗",HUF:"匈牙利福林",RON:"羅馬尼亞列伊",ILS:"以色列新謝克爾",ISK:"冰島克朗",ARS:"阿根廷披索",CLP:"智利披索",COP:"哥倫比亞披索",EGP:"埃及鎊",NGN:"奈及利亞奈拉",PKR:"巴基斯坦盧比",BDT:"孟加拉塔卡"};
-const order=["USD","EUR","JPY","GBP","CAD","CNY","AUD","CHF"];
+const order=["USD","EUR","JPY","TWD","GBP","CAD","CNY","AUD","CHF"];
 const codes=[...order,...Object.keys(names).filter(x=>!order.includes(x)).sort()];
 const $=id=>document.getElementById(id);
 function fill(el,v){el.innerHTML=codes.map(c=>`<option value="${c}">${c} · ${names[c]}</option>`).join("");el.value=v}
-fill($("base"),"USD");fill($("t1"),"JPY");fill($("t2"),"GBP");fill($("t3"),"TWD");fill($("histBase"),"USD");fill($("histTarget"),"EUR");
+fill($("base"),"USD");fill($("t1"),"EUR");fill($("t2"),"JPY");fill($("t3"),"TWD");fill($("histBase"),"USD");fill($("histTarget"),"EUR");
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab,.panel").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.tab).classList.add("active");if(b.dataset.tab==="history")drawReserveChart()});
 let fx=null;const fmt=n=>new Intl.NumberFormat("zh-TW",{maximumFractionDigits:6,useGrouping:false}).format(n);
 function renderFx(activeId="amount"){
@@ -124,7 +124,7 @@ function renderFx(activeId="amount"){
 async function loadFx(){const hadRates=!!fx;$("refresh").disabled=true;$("fxStatus").textContent="正在向資料來源查詢最新可用匯率…";try{let r=await fetch("https://open.er-api.com/v6/latest/USD",{cache:"no-store"});if(!r.ok)throw Error();let d=await r.json();if(d.result!=="success")throw Error();fx={...d.rates,USD:1};renderFx();const last=d.time_last_update_utc||"資料來源未提供";const next=d.time_next_update_utc?new Date(d.time_next_update_utc).toLocaleString("zh-TW",{hour12:false}):"未提供";$("fxStatus").textContent="資料最後更新："+last+"｜資料源預計下次更新："+next}catch(e){$("fxStatus").textContent=hadRates?"連線暫時失敗；保留上次匯率，請稍後再試。":"暫時無法取得匯率，請稍後重試。"}finally{$("refresh").disabled=false}}
 $("amount").oninput=()=>renderFx("amount");$("v1").oninput=()=>renderFx("v1");$("v2").oninput=()=>renderFx("v2");$("v3").oninput=()=>renderFx("v3");
 $("base").onchange=()=>renderFx("amount");$("t1").onchange=()=>renderFx("v1");$("t2").onchange=()=>renderFx("v2");$("t3").onchange=()=>renderFx("v3");$("refresh").onclick=loadFx;
-$("reset").onclick=()=>{$("amount").value=100;fill($("base"),"USD");fill($("t1"),"JPY");fill($("t2"),"GBP");fill($("t3"),"TWD");renderFx("amount")};
+$("reset").onclick=()=>{$("amount").value=100;fill($("base"),"USD");fill($("t1"),"EUR");fill($("t2"),"JPY");fill($("t3"),"TWD");renderFx("amount")};
 const reserveData=[["USD","美元",56.70,"-0.48"],["EUR","歐元",20.60,"+0.56"],["JPY","日圓",4.96,"-0.47"],["CNY","人民幣",2.11,"+0.13"],["GBP","英鎊",null,"+0.16"],["CAD","加拿大元",null,"-0.01"],["AUD","澳大利亞元",null,"+0.13"],["CHF","瑞士法郎",null,"+0.03"]];
 $("reserveRows").innerHTML=reserveData.map((r,i)=>`<tr><td class="rank">${i+1}</td><td><b>${r[0]}</b> · ${r[1]}</td><td class="num">${r[2]===null?"未列出":r[2].toFixed(2)+"%"}</td><td>${r[3].startsWith("+")?"▲ ":"▼ "}${Math.abs(Number(r[3])).toFixed(2)} 個百分點</td></tr>`).join("");
 $("reserveStatus").textContent="資料期別：IMF 2026 Q2 簡報。該簡報明確列出美元、歐元、日圓、人民幣占比；其他幣別僅提供季度變化，故不填入未核實占比。後四種貨幣的排列僅供瀏覽，不代表本季精確名次。";
